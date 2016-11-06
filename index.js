@@ -1,7 +1,8 @@
 var svg = d3.select('body')
             .append('svg')
             .attr({'width': 900, 'height': 600})
-            .on("click", test);
+            .on("click", click)
+            .on("contextmenu", contextmenu);
 
 var data = [
   {"x": 350, "y": 300, "width":100, "color": "red", "transform": "", "class": ""},
@@ -9,6 +10,8 @@ var data = [
   {"x": 450, "y": 300, "width":60, "color": "green", "transform": "rotate(-126.86, 450, 300)", "class": "right"}
 ];
 
+
+var count = depth = 11;
 var angle = Math.asin(3/5) * 180 / Math.PI;
 var blue = d3.rgb(0, 0, 255),
     green = d3.rgb(0, 255, 0);
@@ -17,7 +20,7 @@ var recs  = svg.selectAll("rect")
                 .data(data)
                 .enter()
                 .append("rect")
-                .attr("class", function(d){ return d.class; })
+                .attr("id", function(d){ return d.class; })
                 .attr("x", function(d) { return d.x; })
                 .attr("y", function(d) { return d.y; })
                 .attr("height", function(d) { return d.width; })
@@ -27,12 +30,12 @@ var recs  = svg.selectAll("rect")
 
 // function leftAppend(on, order, width){
 function leftAppend(parentRect, order){
-  if (order > 10) {
+  if (order > depth - 1) {
     return
   }
 
   var newLeft = svg.append("g")
-        .attr("class", "left")
+        .attr("class", function(d) { return "left " + "level-" + order })
         .append("rect")
         .attr("x", function(d) { return parseInt(parentRect.attr("x")) + parseInt(parentRect.attr("width")); })
         .attr("y", function(d) { return parentRect.attr("y"); })
@@ -50,7 +53,7 @@ function leftAppend(parentRect, order){
         });
 
     var newRight = svg.append("g")
-          .attr("class", "right")
+          .attr("class", function(d) { return "right " + "level-" + order })
           .append("rect")
           .attr("x", function(d) { return parseInt(parentRect.attr("x")) + parseInt(parentRect.attr("width")); })
           .attr("y", function(d) { return parseInt(parentRect.attr("y")) + parseInt(parentRect.attr("width")); })
@@ -73,12 +76,12 @@ function leftAppend(parentRect, order){
 }
 
 function rightAppend(parentRect, order){
-  if (order > 10) {
+  if (order > depth - 1) {
     return
   }
 
   var newLeft = svg.append("g")
-        .attr("class", "left")
+        .attr("class", function(d) { return "left " + "level-" + order })
         .append("rect")
         .attr("x", function(d) { return parseInt(parentRect.attr("x")) + parseInt(parentRect.attr("width")); })
         .attr("y", function(d) { return parseInt(parentRect.attr("y")) + parseInt(parentRect.attr("width")); })
@@ -96,7 +99,7 @@ function rightAppend(parentRect, order){
         });
 
     var newRight = svg.append("g")
-          .attr("class", "right")
+          .attr("class", function(d) { return "right " + "level-" + order })
           .append("rect")
           .attr("x", function(d) { return parentRect.attr("x");; })
           .attr("y", function(d) { return parseInt(parentRect.attr("y")) + parseInt(parentRect.attr("width")); })
@@ -117,11 +120,37 @@ function rightAppend(parentRect, order){
     rightAppend(newRight, order + 1);
 }
 
-var count = 11;
-function test() {
-  count = count - 1;
-  var left = d3.select(".left");
-  var right = d3.select(".right");
+
+function click() {
+
+  if (count == 0) {
+    return;
+  } else {
+    count--;
+  }
+
+  var left = d3.select("#left");
+  var right = d3.select("#right");
+  d3.selectAll(".left").remove();
+  d3.selectAll(".right").remove();
   leftAppend(left, count);
   rightAppend(right, count);
+}
+
+function contextmenu() {
+  d3.event.preventDefault();
+
+  if (count >= depth) {
+    return;
+  } else {
+    count++;
+  }
+
+  var left = d3.select("#left");
+  var right = d3.select("#right");
+  d3.selectAll(".left").remove();
+  d3.selectAll(".right").remove();
+  leftAppend(left, count);
+  rightAppend(right, count);
+
 }
