@@ -4,17 +4,19 @@ var svg = d3.select('body')
             .on("click", click)
             .on("contextmenu", contextmenu);
 
-var count = depth = 11;
-var angle = Math.asin(3/5) * 180 / Math.PI;
+
+var x = 450, y = 400,
+    count = depth = 11,
+    angle = Math.asin(3/5) * 180 / Math.PI;
 
 var blue = d3.rgb(3, 0, 65),
     green = d3.rgb(0, 75, 50),
     red = d3.rgb(118, 0, 0);
 
 var data = [
-  {"x": 350, "y": 300, "width":100, "color": red, "transform": "", "class": ""},
-  {"x": 350, "y": 300, "width":80, "color": blue, "transform": "rotate(-126.86, 350, 300)", "class": "left"},
-  {"x": 450, "y": 300, "width":60, "color": green, "transform": "rotate(-126.86, 450, 300)", "class": "right"}
+  {"x": x, "y": y, "width":100, "color": red, "transform": "", "class": ""},
+  {"x": x, "y": y, "width":80, "color": blue, "transform": "rotate(" + -(angle + 90) + "," + x + "," + y + ")", "class": "left"},
+  {"x": x + 100, "y": y, "width":60, "color": green, "transform": "rotate(" + -(angle + 90) + "," + (x + 100) + "," + y + ")", "class": "right"}
 ];
 
 var recs  = svg.selectAll("rect")
@@ -149,5 +151,46 @@ function contextmenu() {
   d3.selectAll(".right").remove();
   leftAppend(left, count);
   rightAppend(right, count);
+}
+
+d3.select("#ratios")
+    .on("change", change)
+    .selectAll("option")
+    .data([ "3:4:5", "5:12:13"])
+    .enter().append("option")
+    .attr("value", function(d) { return d; })
+    .text(function(d) { return d; });
+
+function change() {
+
+  count = depth;
+  d3.selectAll('rect').remove();
+
+  if (this.value =='3:4:5') {
+    angle = Math.asin(3/5) * 180 / Math.PI;
+    data[1].width = 4/5 * 100;
+    data[1].transform = "rotate(" + -(angle + 90) + "," + x + "," + y + ")";
+    data[2].width = 3/5 * 100;
+    data[2].transform = "rotate(" + -(angle + 90) + "," + (x + 100) + "," + y + ")";
+  } else {
+    angle = Math.asin(5/13) * 180 / Math.PI;
+    data[1].width = 12/13 * 100;
+    data[1].transform = "rotate(" + -(angle + 90) + "," + x + "," + y + ")";
+    data[2].width = 5/13 * 100;
+    data[2].transform = "rotate(" + -(angle + 90) + "," + (x + 100) + "," + y + ")";
+  }
+
+    svg.selectAll("rect")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("id", function(d){ return d.class; })
+                .attr("x", function(d) { return d.x; })
+                .attr("y", function(d) { return d.y; })
+                .attr("height", function(d) { return d.width; })
+                .attr("width", function(d) { return d.width; })
+                .attr("fill", function(d) { return d.color; })
+                .attr("transform", function(d){ return d.transform; });
+
 
 }
