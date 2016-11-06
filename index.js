@@ -1,8 +1,8 @@
 var svg = d3.select('body')
             .append('svg')
             .attr({'width': 900, 'height': 600})
-            .on("click", click)
-            .on("contextmenu", contextmenu);
+            .on("click", next)
+            .on("contextmenu", previous);
 
 
 var x = 450, y = 400,
@@ -120,7 +120,7 @@ function rightAppend(parentRect, order){
 }
 
 
-function click() {
+function next() {
 
   if (count == 0) {
     return;
@@ -136,8 +136,8 @@ function click() {
   rightAppend(right, count);
 }
 
-function contextmenu() {
-  d3.event.preventDefault();
+function previous() {
+  console.log(this);
 
   if (count >= depth) {
     return;
@@ -151,6 +151,8 @@ function contextmenu() {
   d3.selectAll(".right").remove();
   leftAppend(left, count);
   rightAppend(right, count);
+
+  d3.event.preventDefault();
 }
 
 d3.select("#ratios")

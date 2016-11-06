@@ -5,9 +5,13 @@
         <title>d3-hw</title>
     </head>
     <body>
+
         <form>
           <label for="ratios">Change ratios :</label>
           <select id="ratios"></select><br>
+          <label>說明：點左鍵可以長樹樹，點右鍵可以消樹樹，或是點選右邊按鈕。<label>
+          <input name="Next" value="Next" type="button" onclick="next()" />
+          <input name="Previous" value="Previous" type="button" onclick="previous()" />
         </form>
         <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
         <script src="index.js" charset="utf-8"></script>
