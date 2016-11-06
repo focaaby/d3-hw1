@@ -1,81 +1,127 @@
-var svg = d3.select('#wrapper')
+var svg = d3.select('body')
             .append('svg')
-            .attr({'width': 900, 'height': 600});
+            .attr({'width': 900, 'height': 600})
+            .on("click", test);
 
+var data = [
+  {"x": 350, "y": 300, "width":100, "color": "red", "transform": "", "class": ""},
+  {"x": 350, "y": 300, "width":80, "color": "blue", "transform": "rotate(-126.86, 350, 300)", "class": "left"},
+  {"x": 450, "y": 300, "width":60, "color": "green", "transform": "rotate(-126.86, 450, 300)", "class": "right"}
+];
 
-var data = [{
-    "xAxis": 350,
-    "yAxis": 300,
-    "width": 100,
-    "red": d3.rgb(255, 0, 0),
-    "green": d3.rgb(0, 255, 0),
-    "blue": d3.rgb(0, 0, 255),
-    "scale1": 4/5,
-    "scale2": 3/5,
-    "angle1": Math.asin(4/5) * 180 / Math.PI,
-    "angle2": Math.asin(3/5) * 180 / Math.PI
-}];
+var angle = Math.asin(3/5) * 180 / Math.PI;
+var blue = d3.rgb(0, 0, 255),
+    green = d3.rgb(0, 255, 0);
 
-var group = svg.selectAll("g")
+var recs  = svg.selectAll("rect")
                 .data(data)
                 .enter()
-                .append("g");
-                // .attr("transform","translate("+ 200 +","+ 200 +")");
+                .append("rect")
+                .attr("class", function(d){ return d.class; })
+                .attr("x", function(d) { return d.x; })
+                .attr("y", function(d) { return d.y; })
+                .attr("height", function(d) { return d.width; })
+                .attr("width", function(d) { return d.width; })
+                .attr("fill", function(d) { return d.color; })
+                .attr("transform", function(d){ return d.transform; });
 
-// first square
-var rec = group.append("rect")
-               .attr("x", function(d) { return d.xAxis; })
-               .attr("y", function(d) { return d.yAxis; })
-               .attr("height", function(d) { return d.width; })
-               .attr("width", function(d) { return d.width; })
-               .style("fill", function(d) { return d.red; });
+// function leftAppend(on, order, width){
+function leftAppend(parentRect, order){
+  if (order > 10) {
+    return
+  }
 
+  var newLeft = svg.append("g")
+        .attr("class", "left")
+        .append("rect")
+        .attr("x", function(d) { return parseInt(parentRect.attr("x")) + parseInt(parentRect.attr("width")); })
+        .attr("y", function(d) { return parentRect.attr("y"); })
+        .attr("height", function(d) { return parentRect.attr("width") * 4/5; })
+        .attr("width", function(d) { return parentRect.attr("width") * 4/5; })
+        // .attr("fill", function(d) { return d.blue((parseInt(parentRect.attr("data-level")) + 1)); })
+        .attr("fill", function(d) { return blue.darker(order) ;})
+        .attr("transform", function(d) {
+          var tmp = parentRect.attr("transform");
+          if (!tmp) {
+              tmp = '';
+          }
+          tmp += 'rotate(' +  -(angle) + ',' + (parseInt(parentRect.attr("x")) + parseInt(parentRect.attr("width"))) + ',' + parentRect.attr("y") + ')';
+          return tmp;
+        });
 
-var left = group.append("rect")
-                .attr("x", function(d) { return d.xAxis; })
-                .attr("y", function(d) { return d.yAxis; })
-                .attr("height", function(d) { return d.width * d.scale1; })
-                .attr("width", function(d) { return d.width * d.scale1; })
-                .style("fill", function(d) { return d.blue; })
-                // .transition()
-                // .duration(800)
-                // .ease('cubic')
-                .attr('transform', function(d, i){ return "rotate("+ -(d.angle2+90) + "," + d.xAxis + "," + d.yAxis + ")"; });
+    var newRight = svg.append("g")
+          .attr("class", "right")
+          .append("rect")
+          .attr("x", function(d) { return parseInt(parentRect.attr("x")) + parseInt(parentRect.attr("width")); })
+          .attr("y", function(d) { return parseInt(parentRect.attr("y")) + parseInt(parentRect.attr("width")); })
+          .attr("height", function(d) { return parentRect.attr("width") * 3/5; })
+          .attr("width", function(d) { return parentRect.attr("width") * 3/5; })
+          // .attr("fill", function(d) { return d.blue((parseInt(parentRect.attr("data-level")) + 1)); })
+          .attr("fill", function(d) { return blue.darker(order) ;})
+          .attr("transform", function(d) {
+            var tmp = parentRect.attr("transform");
+            if (!tmp) {
+                tmp = '';
+            }
+            tmp += 'rotate(' +  -(angle) + ',' + (parseInt(parentRect.attr("x")) + parseInt(parentRect.attr("width"))) + ',' + (parseInt(parentRect.attr("y")) + parseInt(parentRect.attr("width"))) + ')';
+            return tmp;
+          });
 
-var right = group.append("rect")
-                .attr("x", function(d) { return d.xAxis + d.width; })
-                .attr("y", function(d) { return d.yAxis; })
-                .attr("height", function(d) { return d.width * d.scale2; })
-                .attr("width", function(d) { return d.width * d.scale2; })
-                .style("fill", function(d) { return d.green; })
-                // .transition()
-                // .duration(800)
-                // .ease('cubic')
-                .attr('transform', function(d, i){ return "rotate("+ -(d.angle2+90) + "," + (d.xAxis + d.width) + "," + d.yAxis + ")"; });
+    // leftAppend(newRight, order + 1);
+    leftAppend(newLeft, order + 1);
+    rightAppend(newRight, order + 1)
+}
 
-// ori.x + 100 * 4/5
-// ori.x + 100 * 4/5 + 100 * 4/5 * 4/5
+function rightAppend(parentRect, order){
+  if (order > 10) {
+    return
+  }
 
-var leftRec = function (level) {
-    group.append("rect")
-         .attr("x", function(d) {
-             var sum = 0;
-             for (var i = 1; i < level+1; i++) {
-                 sum += d.width * Math.pow( 4/5, i);
-             }
-             return  d.xAxis + sum;
-         })
-         .attr("y", function(d) { return d.yAxis; })
-         .attr("height", function(d) { return d.width * Math.pow(d.scale1, level+1); })
-         .attr("width", function(d) { return d.width * Math.pow(d.scale1, level+1); })
-         .attr('fill', function(d) { return d.blue.darker(level) })
-         .attr('transform', function(d) {
-             var tmp = "rotate("+  -(d.angle2 + 90) + "," + d.xAxis + "," + d.yAxis + ")";
-             var sum = 0;
-             for (var i = 1; i < level + 1; i++) {
-                 sum += d.width * Math.pow( 4/5, i);
-                 tmp += "rotate(" + (-d.angle2) + "," + (d.xAxis + sum) + "," + d.yAxis  + ")" ;
-             }
-             return tmp
-         });
-};
+  var newLeft = svg.append("g")
+        .attr("class", "left")
+        .append("rect")
+        .attr("x", function(d) { return parseInt(parentRect.attr("x")) + parseInt(parentRect.attr("width")); })
+        .attr("y", function(d) { return parseInt(parentRect.attr("y")) + parseInt(parentRect.attr("width")); })
+        .attr("height", function(d) { return parentRect.attr("width") * 4/5; })
+        .attr("width", function(d) { return parentRect.attr("width") * 4/5; })
+        // .attr("fill", function(d) { return d.blue((parseInt(parentRect.attr("data-level")) + 1)); })
+        .attr("fill", function(d) { return green.darker(order) ;})
+        .attr("transform", function(d) {
+          var tmp = parentRect.attr("transform");
+          if (!tmp) {
+              tmp = '';
+          }
+          tmp += 'rotate(' +  (90-angle) + ',' + (parseInt(parentRect.attr("x")) + parseInt(parentRect.attr("width"))) + ',' + (parseInt(parentRect.attr("y")) + parseInt(parentRect.attr("width"))) + ')';
+          return tmp;
+        });
+
+    var newRight = svg.append("g")
+          .attr("class", "right")
+          .append("rect")
+          .attr("x", function(d) { return parentRect.attr("x");; })
+          .attr("y", function(d) { return parseInt(parentRect.attr("y")) + parseInt(parentRect.attr("width")); })
+          .attr("height", function(d) { return parentRect.attr("width") * 3/5; })
+          .attr("width", function(d) { return parentRect.attr("width") * 3/5; })
+          // .attr("fill", function(d) { return d.blue((parseInt(parentRect.attr("data-level")) + 1)); })
+          .attr("fill", function(d) { return green.darker(order) ;})
+          .attr("transform", function(d) {
+            var tmp = parentRect.attr("transform");
+            if (!tmp) {
+                tmp = '';
+            }
+            tmp += 'rotate(' +  (90-angle) + ',' + (parentRect.attr("x")) + ',' + (parseInt(parentRect.attr("y")) + parseInt(parentRect.attr("width"))) + ')';
+            return tmp;
+          });
+
+    leftAppend(newLeft, order + 1);
+    rightAppend(newRight, order + 1);
+}
+
+var count = 11;
+function test() {
+  count = count - 1;
+  var left = d3.select(".left");
+  var right = d3.select(".right");
+  leftAppend(left, count);
+  rightAppend(right, count);
+}
