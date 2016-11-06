@@ -1,6 +1,6 @@
 var svg = d3.select('body')
             .append('svg')
-            .attr({'width': 900, 'height': 600})
+            .attr({'width': 1200, 'height': 600})
             .on("click", next)
             .on("contextmenu", previous);
 
