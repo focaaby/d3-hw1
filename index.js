@@ -4,17 +4,18 @@ var svg = d3.select('body')
             .on("click", click)
             .on("contextmenu", contextmenu);
 
-var data = [
-  {"x": 350, "y": 300, "width":100, "color": "red", "transform": "", "class": ""},
-  {"x": 350, "y": 300, "width":80, "color": "blue", "transform": "rotate(-126.86, 350, 300)", "class": "left"},
-  {"x": 450, "y": 300, "width":60, "color": "green", "transform": "rotate(-126.86, 450, 300)", "class": "right"}
-];
-
-
 var count = depth = 11;
 var angle = Math.asin(3/5) * 180 / Math.PI;
-var blue = d3.rgb(0, 0, 255),
-    green = d3.rgb(0, 255, 0);
+
+var blue = d3.rgb(3, 0, 65),
+    green = d3.rgb(0, 75, 50),
+    red = d3.rgb(118, 0, 0);
+
+var data = [
+  {"x": 350, "y": 300, "width":100, "color": red, "transform": "", "class": ""},
+  {"x": 350, "y": 300, "width":80, "color": blue, "transform": "rotate(-126.86, 350, 300)", "class": "left"},
+  {"x": 450, "y": 300, "width":60, "color": green, "transform": "rotate(-126.86, 450, 300)", "class": "right"}
+];
 
 var recs  = svg.selectAll("rect")
                 .data(data)
@@ -41,8 +42,7 @@ function leftAppend(parentRect, order){
         .attr("y", function(d) { return parentRect.attr("y"); })
         .attr("height", function(d) { return parentRect.attr("width") * 4/5; })
         .attr("width", function(d) { return parentRect.attr("width") * 4/5; })
-        // .attr("fill", function(d) { return d.blue((parseInt(parentRect.attr("data-level")) + 1)); })
-        .attr("fill", function(d) { return blue.darker(order) ;})
+        .attr("fill", function(d) { return d3.rgb(parentRect.attr("fill")).brighter(0.7) ;})
         .attr("transform", function(d) {
           var tmp = parentRect.attr("transform");
           if (!tmp) {
@@ -59,8 +59,7 @@ function leftAppend(parentRect, order){
           .attr("y", function(d) { return parseInt(parentRect.attr("y")) + parseInt(parentRect.attr("width")); })
           .attr("height", function(d) { return parentRect.attr("width") * 3/5; })
           .attr("width", function(d) { return parentRect.attr("width") * 3/5; })
-          // .attr("fill", function(d) { return d.blue((parseInt(parentRect.attr("data-level")) + 1)); })
-          .attr("fill", function(d) { return blue.darker(order) ;})
+          .attr("fill", function(d) { return d3.rgb(parentRect.attr("fill")).brighter(0.7) ;})
           .attr("transform", function(d) {
             var tmp = parentRect.attr("transform");
             if (!tmp) {
@@ -87,8 +86,7 @@ function rightAppend(parentRect, order){
         .attr("y", function(d) { return parseInt(parentRect.attr("y")) + parseInt(parentRect.attr("width")); })
         .attr("height", function(d) { return parentRect.attr("width") * 4/5; })
         .attr("width", function(d) { return parentRect.attr("width") * 4/5; })
-        // .attr("fill", function(d) { return d.blue((parseInt(parentRect.attr("data-level")) + 1)); })
-        .attr("fill", function(d) { return green.darker(order) ;})
+        .attr("fill", function(d) { return d3.rgb(parentRect.attr("fill")).brighter(0.7) ;})
         .attr("transform", function(d) {
           var tmp = parentRect.attr("transform");
           if (!tmp) {
@@ -105,8 +103,7 @@ function rightAppend(parentRect, order){
           .attr("y", function(d) { return parseInt(parentRect.attr("y")) + parseInt(parentRect.attr("width")); })
           .attr("height", function(d) { return parentRect.attr("width") * 3/5; })
           .attr("width", function(d) { return parentRect.attr("width") * 3/5; })
-          // .attr("fill", function(d) { return d.blue((parseInt(parentRect.attr("data-level")) + 1)); })
-          .attr("fill", function(d) { return green.darker(order) ;})
+          .attr("fill", function(d) { return d3.rgb(parentRect.attr("fill")).brighter(0.7) ;})
           .attr("transform", function(d) {
             var tmp = parentRect.attr("transform");
             if (!tmp) {
